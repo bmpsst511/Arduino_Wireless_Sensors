@@ -8,25 +8,23 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-const int FLEX_PIN = A0; // Pin connected to voltage divider output 
-// Measure the voltage at 5V and the actual resistance of your 
-// 47k resistor, and enter them below: 
+const int FLEX_PIN = A0; // 將類比腳位AO設為讀取腳位Pin connected to voltage divider output 
+// 使用220歐姆電阻，並使用電表量測正確值 220k resistor, and enter them below: 
+const float R_DIV = 246.0; 
+// 3.3v的供電給感測器，並使用電表量測正確值 Measured voltage of Ardunio 3.3V line 
 const float VCC = 3.2; 
-// Measured voltage of Ardunio 5V line 
-const float R_DIV = 2200.0; 
-// Measured resistance of 3.3k resistor 
-// Upload the code, then try to adjust these values to more 
-// accurately calculate bend degree. 
-const float STRAIGHT_RESISTANCE = 25000.0; 
-// resistance when straight 
-const float BEND_RESISTANCE = 125000.0; 
-// resistance at 90 deg 
+//FlexSensor在180度彎曲下的電阻值，並使用電表量測正確值 accurately calculate bend degree. 
+const float STRAIGHT_RESISTANCE = 9000.0; 
+// FlexSensor在無彎曲下的電阻值，並使用電表量測正確值 resistance when straight 
+const float BEND_RESISTANCE = 22000.0; 
+//宣告濾波以符點數
 float Filter_Value;
-const char ip[]="172.20.10.3";
-const char* ssid =/*"dlink";*//*"iPhone"*/"LeeiPhone";
-const char* password = /*"468255000";*//*"19940625"*/"hnwl0618";
-WiFiServer server(27);
-WiFiUDP Client;
+
+const char ip[]="192.168.0.101"; //當電腦連接到分享器時，給出的IP位址 IPCONFIG查詢
+const char* ssid ="TP-LINK_A7366A";/*/*"iPhone""LeeiPhone";*/ //WIFI名稱
+const char* password = "03487150";/*"19940625";"hnwl0618";*/  //WIFI密碼
+WiFiServer server(27); //設定Port
+WiFiUDP Client; //設定成客戶端模式
 
 void setup() 
 {
@@ -53,17 +51,29 @@ void setup()
   
 }
 
-// 加??推平均?波法
+/*
+A、名稱：加權遞推平均濾波法
+B、方法：
+    是針對遞推平均濾波法的改進．即不同時刻的數據加以不同的權重
+    通常是，越靠近現時刻的數據，權取得越大。
+    給予新採樣值得權係數越大，則靈敏度越高，但信號平滑度越低。
+C、優點：
+    適用於有效大純滯後時間常數的對象，和採樣周期較短的系統。
+D、缺點：
+    對於純滯後時間長數較小、採樣周數較長、變化緩慢的信號；
+    不能迅速反應系統當前所受干擾的嚴重程度，濾波效果差。
+*/
+// 加權遞推平均濾波法
 #define FILTER_N 12
-int coe[FILTER_N] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};    // 加?系?表
-int sum_coe = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12; // 加?系?和
+int coe[FILTER_N] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};    // 加權係數表
+int sum_coe = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12; // 加權係數和
 int filter_buf[FILTER_N + 1];
 float Filter() {
   int i;
   float filter_sum = 0;
   filter_buf[FILTER_N] = analogRead(FLEX_PIN);
   for(i = 0; i < FILTER_N; i++) {
-    filter_buf[i] = filter_buf[i + 1]; // 所有?据左移，低位仍掉
+    filter_buf[i] = filter_buf[i + 1]; // 所有數據左移，低位仍掉
     filter_sum += filter_buf[i] * coe[i];
   }
   filter_sum /= sum_coe;
@@ -85,7 +95,7 @@ void loop()
   //Serial.println();   
   // Send the distance to the client, along with a break to separate our messages
   Client.beginPacket(ip,27);
-  Client.println(flexR);
+  Client.println(angle);
   Client.endPacket();
   delay(50);
 }
