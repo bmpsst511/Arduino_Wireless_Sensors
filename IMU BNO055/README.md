@@ -18,7 +18,7 @@ disqus: hackmd
 **轉換概念**：在n系中，加速度計輸出為，經過bCn（用四元數表示的轉換矩陣）轉換之後到b系中的值為；在b系中，加速度計的測量值為，現在和均表示在b系中的豎直向下的向量，由此，我們來做向量積（叉積），得到誤差，利用這個誤差來修正bCn矩陣，於是四元數就在這樣一個過程中被修正了。但是，由於加速度計無法感知z軸上的旋轉運動，所以還需要用地磁計來進一步補償。
 加速度計在靜止時測量的是重力加速度，是有大小和方向的；同理，地磁計同樣測量的是地球磁場的大小和方向，只不過這個方向不再是豎直向下，而是與x軸（或者y軸）呈一個角度，與z軸呈一個角度。記作，假設x軸對準北邊，所以by=0，即。倘若知道bx和bz的精確值，那麼就可以採用和加速度計一樣的修正方法來修正。只不過在加速度計中，在n系中的參考向量是，變成了地磁計的。如果我們知道bx和bz的精確值，那麼就可以擺脫掉加速度計的補償，直接用地磁計和陀螺儀進行姿態解算，但是你看過誰只用陀螺儀和地磁計進行姿態解算嗎？沒有，因為沒人會去測量當地的地磁場相對於東北天坐標的夾角，也就是bx和bz（插曲：關於這個bx和bz的理解：可以對比重力加速度的理解，就像vx vy vz似的，因為在每一處的歸一化以後的重力加速度都是0 0 1然後旋轉到機體坐標系，而地球每一處的地磁大小都不一樣的，不能像重力加速度那樣直接旋轉得到了，只能用磁力計測量到的數據去強制擬合。）。那麼現在怎麼辦？前面已經講了，姿態解算就是求解旋轉矩陣，這個矩陣的作用就是將b系和n正確的轉化直到重合。現在我們假設nCb旋轉矩陣是經過加速度計校正後的矩陣，當某個確定的向量（b系中）經過這個矩陣旋轉之後（到n系），這兩個坐標系在XOY平面上重合（參考DCM [IMU:Theory](http://www.ent.mrt.ac.lk/~rohan/teaching/EN4562/LectureNotes/Lec%203%20IMU%20Theory.pdf)的Drift cancellation部分），只是在z軸旋轉上會存在一個偏航角的誤差。
 
- 實作
+實作 Implementation
 ---
 
 ### Fritzing 元件導入檔鏈結
@@ -32,9 +32,11 @@ disqus: hackmd
 
 上圖為**NodeMCU V3**與**Adafruit BNO055**在軟體**Fritzing**內所繪的接線圖
 
-### 程式碼
+### 程式碼 Code
 
 #### Arduino Adafruit Library安裝
+Before running the program, you need to install some libraries from the link below.
+
 [Adafruit_Sensor](https://github.com/adafruit/Adafruit_Sensor)
 
 [Adafruit_BNO055](https://github.com/adafruit/Adafruit_BNO055)
