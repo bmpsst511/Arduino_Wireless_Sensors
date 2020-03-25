@@ -1,6 +1,3 @@
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <WiFiUDP.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
@@ -37,7 +34,6 @@ void displaySensorDetails(void)
 void setup() {
   Serial.begin(115200);
   Serial.println("Orientation Sensor Test"); Serial.println("");
-  pinMode(TouchSensor, INPUT);
 
    /* Initialise the sensor */
   if(!bno.begin())
