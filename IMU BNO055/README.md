@@ -162,12 +162,12 @@ NodeMCU set as a client and carries out the wireless data transmission with UDP 
 #include <Servo.h>
 
 /** WIFI分享器設定 **/
-const char* ssid =/*"你看不到我";
+const char* ssid ="你看不到我";
 const char* password = "你以為我會打出來嗎...!?";
 const char ip[]="192.168.XX.XXX"; //分享器給你Server的IP位址
 /** WIFI分享器設定 **/
 
-String PoseX, PoseY, PoseZ, On;
+String PoseX, PoseY, PoseZ;
 
 /* Set the delay between fresh samples */
 #define BNO055_SAMPLERATE_DELAY_MS (100)
