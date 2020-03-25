@@ -2,8 +2,10 @@
 title: 'GitHub Arduino Sensor IMU-BNO055 Readme'
 disqus: hackmd
 ---
+
 ## 九軸慣性感測器（Inertial measurement unit IMU）
 ---
+
 **HACKMD Link** : https://hackmd.io/@J-T-LEE/IMU-BNO055
 
 九軸慣性感測器主要構成有：三軸加速度計、三軸MEMS陀螺儀、三軸磁力計。
@@ -18,7 +20,8 @@ disqus: hackmd
 **轉換概念**：在n系中，加速度計輸出為，經過bCn（用四元數表示的轉換矩陣）轉換之後到b系中的值為；在b系中，加速度計的測量值為，現在和均表示在b系中的豎直向下的向量，由此，我們來做向量積（叉積），得到誤差，利用這個誤差來修正bCn矩陣，於是四元數就在這樣一個過程中被修正了。但是，由於加速度計無法感知z軸上的旋轉運動，所以還需要用地磁計來進一步補償。
 加速度計在靜止時測量的是重力加速度，是有大小和方向的；同理，地磁計同樣測量的是地球磁場的大小和方向，只不過這個方向不再是豎直向下，而是與x軸（或者y軸）呈一個角度，與z軸呈一個角度。記作，假設x軸對準北邊，所以by=0，即。倘若知道bx和bz的精確值，那麼就可以採用和加速度計一樣的修正方法來修正。只不過在加速度計中，在n系中的參考向量是，變成了地磁計的。如果我們知道bx和bz的精確值，那麼就可以擺脫掉加速度計的補償，直接用地磁計和陀螺儀進行姿態解算，但是你看過誰只用陀螺儀和地磁計進行姿態解算嗎？沒有，因為沒人會去測量當地的地磁場相對於東北天坐標的夾角，也就是bx和bz（插曲：關於這個bx和bz的理解：可以對比重力加速度的理解，就像vx vy vz似的，因為在每一處的歸一化以後的重力加速度都是0 0 1然後旋轉到機體坐標系，而地球每一處的地磁大小都不一樣的，不能像重力加速度那樣直接旋轉得到了，只能用磁力計測量到的數據去強制擬合。）。那麼現在怎麼辦？前面已經講了，姿態解算就是求解旋轉矩陣，這個矩陣的作用就是將b系和n正確的轉化直到重合。現在我們假設nCb旋轉矩陣是經過加速度計校正後的矩陣，當某個確定的向量（b系中）經過這個矩陣旋轉之後（到n系），這兩個坐標系在XOY平面上重合，只是在z軸旋轉上會存在一個偏航角的誤差。
 
-實作 Implementation
+---
+實作
 ---
 
 ### Fritzing 元件導入檔鏈結
@@ -26,21 +29,21 @@ disqus: hackmd
 [NodeMCU](https://github.com/roman-minyaylov/nodemcu-v3-fritzing)
 
 感測器有別於一般常使用的**MPU6050,9150,9255**等，採用的是**Adafruit BNO055**
-開發版則使用**NodeMCU V3**達到資料無線傳輸的目的。
+開發板則使用**NodeMCU V3**達到資料無線傳輸的目的。
 
-![九軸接線圖](https://github.com/bmpsst511/Arduino_Wireless_Sensors/blob/master/IMU%20BNO055/%E6%8E%A5%E7%B7%9A%E5%9C%96.PNG)
+![九軸接線圖](https://i.imgur.com/Vsf9Ca7.png)
+
 
 上圖為**NodeMCU V3**與**Adafruit BNO055**在軟體**Fritzing**內所繪的接線圖
 
-### 程式碼 Code
-
+---
+### 程式碼
+---
 #### Arduino Adafruit Library安裝
-Before running the program, you need to install some libraries from the link below.
-
-[Adafruit_Sensor](https://github.com/adafruit/Adafruit_Sensor)
-
+[Adafruit_Sensor](https://github.com/adafruit/Adafruit_Sensor)    
 [Adafruit_BNO055](https://github.com/adafruit/Adafruit_BNO055)
 
+**Code Part**↓
 ```
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -101,7 +104,7 @@ void loop() {
 /* Get a new sensor event */
   sensors_event_t event;
   bno.getEvent(&event);
-  imu::Vector<3> linAcc = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
   /* Board layout:
          +----------+
          |         *| RST   PITCH  ROLL  HEADING
@@ -113,18 +116,15 @@ void loop() {
          +----------+
   */
 
+/* The processing sketch expects data as roll, pitch, heading */
 
-  /* The processing sketch expects data as roll, pitch, heading */
-  //Serial.print(F("Orientation: "));
-  Serial.print((float)event.orientation.x);Serial.print(";");
- // Serial.print(F(" "));
-  Serial.print((float)event.orientation.y);Serial.print(";");
- // Serial.print(F(" "));
-  Serial.print((float)event.orientation.z);Serial.print("\t");
- // Serial.println(F(""));
-  PoseX = (float)event.orientation.x;
-    PoseY = (float)event.orientation.y;
-      PoseZ = (float)event.orientation.z;
+  Serial.print((int)euler.x());Serial.print(";");
+  Serial.print((int)euler.y());Serial.print(";");
+  Serial.print((int)euler.z());Serial.print("\t");
+  PoseX = (int)euler.x();
+  PoseY = (int)euler.y();
+  PoseZ = (int)euler.z();
+      
   /* Also send calibration data for each sensor. */
   uint8_t sys, gyro, accel, mag = 3;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
@@ -141,11 +141,163 @@ void loop() {
   }
 
 ```
+---
+
+無線傳輸 Wireless Transmission
+---
+NodeMCU為客戶端，使用UDP架構來傳輸慣性感測器資料。    
+NodeMCU set as a client and carries out the wireless data transmission with UDP protocol.
+
+```
+/** WIFI LIBRARY PART**/
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <WiFiUDP.h>
+/** WIFI LIBRARY PART**/
+
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
+#include <Servo.h>
+
+/** WIFI分享器設定 **/
+const char* ssid =/*"你看不到我";
+const char* password = "你以為我會打出來嗎...!?";
+const char ip[]="192.168.XX.XXX"; //分享器給你Server的IP位址
+/** WIFI分享器設定 **/
+
+String PoseX, PoseY, PoseZ, On;
+
+/* Set the delay between fresh samples */
+#define BNO055_SAMPLERATE_DELAY_MS (100)
+
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
+
+/** 指定Port 且設置為客戶端**/
+WiFiServer server(27);
+WiFiUDP Client;
+/** 指定Port 且設置為客戶端**/
+
+
+/**************************************************************************/
+/*
+    Displays some basic information on this sensor from the unified
+    sensor API sensor_t type (see Adafruit_Sensor for more information)
+*/
+/**************************************************************************/
+
+void displaySensorDetails(void)
+{
+  sensor_t sensor;
+  bno.getSensor(&sensor);
+  Serial.println("------------------------------------");
+  Serial.print  ("Sensor:       "); Serial.println(sensor.name);
+  Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
+  Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
+  Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" xxx");
+  Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" xxx");
+  Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" xxx"); 
+  Serial.println("------------------------------------");
+  Serial.println("");
+  delay(500);
+}
+ 
+void setup() {
+  Serial.begin(115200);
+  
+  /** 上電後執行WIFI連線與顯示相關資訊**/
+  WiFi.mode(WIFI_STA); 
+  Serial.println("Orientation Sensor Test"); Serial.println("");
+  WiFi.begin(ssid,password);
+  Serial.println("Connecting");
+ 
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+ 
+  Serial.print("Connected to "); 
+  Serial.println(ssid);
+  Serial.print("IP Address: "); 
+  Serial.println(WiFi.localIP());
+ 
+  // Start the UDP client
+  Client.begin(27);
+  /** 上電後執行WIFI連線與顯示相關資訊**/
+  
+   /* Initialise the sensor */
+  if(!bno.begin())
+  {
+    /* There was a problem detecting the BNO055 ... check your connections */
+    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    while(1);
+  }
+
+    /* Use external crystal for better accuracy */
+  bno.setExtCrystalUse(true);
+   
+  /* Display some basic information on this sensor */
+  displaySensorDetails();
+  
+}
+ 
+void loop() {
+
+/*Get a new sensor event */
+  sensors_event_t event;
+  bno.getEvent(&event);
+  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+  /* Board layout:
+         +----------+
+         |         *| RST   PITCH  ROLL  HEADING
+     ADR |*        *| SCL
+     INT |*        *| SDA     ^            /->
+     PS1 |*        *| GND     |            |
+     PS0 |*        *| 3VO     Y    Z-->    \-X
+         |         *| VIN
+         +----------+
+  */
+
+  /* The processing sketch expects data as roll, pitch, heading */
+
+  Serial.print((int)euler.x());Serial.print(";");
+  Serial.print((int)euler.y());Serial.print(";");
+  Serial.print((int)euler.z());Serial.print("\t");
+  PoseX = (int)euler.x();
+  PoseY = (int)euler.y();
+  PoseZ = (int)euler.z();
+
+  /* Also send calibration data for each sensor. */
+  uint8_t sys, gyro, accel, mag = 3;
+  bno.getCalibration(&sys, &gyro, &accel, &mag);
+ /* Serial.print(F("Calibration: "));
+  Serial.print(sys, DEC);
+  Serial.print(F(" "));
+  Serial.print(gyro, DEC);
+  Serial.print(F(" "));
+  Serial.print(accel, DEC);
+  Serial.print(F(" "));
+  Serial.println(mag, DEC);*/
+  Serial.print("\r\n");
+  
+  /**開始發送資料給Server端 **/
+    // Send the distance to the client, along with a break to separate our messages
+    Client.beginPacket(ip,27); //前面指定的Port
+    Client.println(PoseX+";"+PoseY+";"+PoseZ);
+    Client.endPacket();
+    delay(BNO055_SAMPLERATE_DELAY_MS);
+  /**開始發送資料給Server端 **/
+
+  }
+```
+
+---
 Reference
 
-DCM [IMU:Theory](http://www.ent.mrt.ac.lk/~rohan/teaching/EN4562/LectureNotes/Lec%203%20IMU%20Theory.pdf)的Drift cancellation部分
+參考DCM [IMU:Theory](http://www.ent.mrt.ac.lk/~rohan/teaching/EN4562/LectureNotes/Lec%203%20IMU%20Theory.pdf)的Drift cancellation部分
 
 [Adafruit](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/arduino-code)
 
 
-###### tags: `Arduino Sensor` `GITHUB`
+###### tags: `GITHUB` `Documentation`
