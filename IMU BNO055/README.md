@@ -45,7 +45,7 @@ disqus: hackmd
 [Adafruit_BNO055](https://github.com/adafruit/Adafruit_BNO055)
 
 **Code Part**↓
-```
+```clike=
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
