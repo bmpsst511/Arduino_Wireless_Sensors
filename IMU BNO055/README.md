@@ -1,5 +1,5 @@
 ---
-title: 'GitHub Arduino Sensor Readme'
+title: 'GitHub Arduino Sensor BNO055 IMU Readme'
 disqus: hackmd
 ---
 
