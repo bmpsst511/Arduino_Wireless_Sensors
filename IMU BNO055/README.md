@@ -4,7 +4,7 @@ disqus: hackmd
 ---
 ## 九軸慣性感測器（Inertial measurement unit IMU）
 ---
-**HACKMD Link** : https://hackmd.io/@J-T-LEE/IMU_BNO055
+**HACKMD Link** : https://hackmd.io/@J-T-LEE/IMU-BNO055
 
 九軸慣性感測器主要構成有：三軸加速度計、三軸MEMS陀螺儀、三軸磁力計。
 
