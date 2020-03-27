@@ -7,7 +7,7 @@ disqus: hackmd
 ---
 
 [**HACKMD Link**](https://hackmd.io/@J-T-LEE/Flex-Sensor)    
-[**GITHUB Link**](https://github.com/bmpsst511/Arduino_Wireless_Sensors/tree/master/IMU%20BNO055) 
+[**GITHUB Link**](https://github.com/bmpsst511/Arduino_Wireless_Sensors/tree/master/Flex%20Sensor) 
 
 彎曲感測器 Flex Sensor：主要透過其表面貼附的可導電材質(如可導電墨水或石墨稀等複合材料)外力使之彎曲時可改變其電阻值。市面上常看到的有長度2.2~inch~與4.5~inch~，不同的長度會有不同的阻值，因此在使用前須先量測其在不彎曲狀態下的阻值與接近180度彎曲狀態下的阻值，並導入置程式算法內得出較可靠得可讀式角度數據。
 
@@ -18,7 +18,8 @@ disqus: hackmd
 ### Fritzing 元件導入檔鏈結
 [NodeMCU](https://github.com/roman-minyaylov/nodemcu-v3-fritzing)
 
-本次實驗使用的為4.5inch的彎曲感測器
+本次實驗使用的為4.5inch的彎曲感測器    
+哪裡買:    
 [彎曲感測器2.2英吋](暫定賣場連結)    
 [彎曲感測器4.5英吋](暫定賣場連結)
 
