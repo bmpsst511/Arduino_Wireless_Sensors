@@ -9,7 +9,7 @@ disqus: hackmd
 [**HACKMD Link**](https://hackmd.io/@J-T-LEE/Flex-Sensor)    
 [**GITHUB Link**](https://github.com/bmpsst511/Arduino_Wireless_Sensors/tree/master/Flex%20Sensor) 
 
-彎曲感測器 Flex Sensor：主要透過其表面貼附的可導電材質(如可導電墨水或石墨稀等複合材料)外力使之彎曲時可改變其電阻值。市面上常看到的有長度2.2~inch~與4.5~inch~，不同的長度會有不同的阻值，因此在使用前須先量測其在不彎曲狀態下的阻值與接近180度彎曲狀態下的阻值，並導入置程式算法內得出較可靠得可讀式角度數據。
+彎曲感測器 Flex Sensor：主要透過其表面貼附的可導電材質(如可導電墨水或石墨稀等複合材料)外力使之彎曲時可改變其電阻值。市面上常看到的有長度2.2~inch~與4.5~inch~，不同的長度會有不同的阻值，因此在使用前須先量測其在<font color=red>**不彎曲狀態**</font>下的阻值與<font color=red>**接近90度彎曲**</font>狀態下的阻值，並導入置程式算法內得出較可靠得可讀式角度數據。
 
 ---
 實作
@@ -28,6 +28,16 @@ disqus: hackmd
 
 
 上圖為**NodeMCU V3**與**Flex Sensor**在軟體**Fritzing**內所繪的接線圖
+
+### 前置作業
+---
+#### 測量電阻Measuring resistances
+
+4.5英吋在不彎曲時的阻值約 <font color=red>9000ohm</font>
+
+4.5英吋在彎曲接近90度時的阻值約 <font color=red>22000ohm</font>
+
+#### 濾波應用
 
 由於當讀取彎曲感測器值的時候，在Arduino序列繪圖家的顯示值十分不穩定，因此加了一個濾波算法去平滑得到的曲線如下
 
