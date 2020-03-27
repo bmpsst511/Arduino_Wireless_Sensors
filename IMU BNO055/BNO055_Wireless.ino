@@ -8,7 +8,6 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include <Servo.h>
 
 /** WIFI分享器設定 **/
 const char* ssid ="你看不到我";
