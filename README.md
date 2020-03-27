@@ -17,7 +17,7 @@ Arduino Sensor
 2. 基礎電路學
 3. Arduino基礎語法
 
-**About me**    
+## About me    
 目前在 **Japan Adavanced Insititute of Science and Technology** 窮讀工學博士班，涉略的領域有 **3D Printer Technology**、**VR Interaction Framework for Unity**、**Arduino Sensors programming**    
 
 Email : bmpsst511@gmail.com
