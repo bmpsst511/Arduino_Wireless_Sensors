@@ -20,7 +20,9 @@ disqus: hackmd
 [NodeMCU](https://github.com/roman-minyaylov/nodemcu-v3-fritzing)
 [Sharp IR Sensor](https://fritzing.org/projects/gp2y0a21yk0f)
 
-本次實驗使用的為夏普紅外線距離感測器家族成員之一，此型號可提供4～30cm的探測距離屬於紅外測距中的基礎類產品，同樣也擁有夏普在紅外距離探測領域一貫的品質。此感測器可以用於機器人的測距、避障以及高級的路徑規劃，是機器視覺及其應用領域的不錯選擇。
+本次實驗使用的為夏普紅外線距離感測器家族成員之一，此型號可提供4～30cm的探測距離屬於紅外測距中的基礎類產品，同樣也擁有夏普在紅外距離探測領域一貫的品質。此感測器可以用於機器人的測距、避障以及高級的路徑規劃，是機器視覺及其應用領域的不錯選擇。    
+
+哪裡買:
 [距離感測器](http://riobotics-test.weebly.com/sharp-gp2d120.html)    
 
 ![距離感測器接線圖](https://i.imgur.com/nBla2yw.png)
