@@ -297,6 +297,7 @@ void loop() {
 Unity 接收並控制方塊旋轉
 ---
 {%youtube NqKCRLLRfbo %}
+![](https://github.com/bmpsst511/Arduino_Wireless_Sensors/blob/master/IMU%20BNO055/%E5%A3%93%E7%B8%AE%E5%AF%A6%E9%9A%9B%E5%B1%95%E7%A4%BA%E5%8B%95%E7%95%AB.gif)
 ---
 Unity程式碼↓
 ---
