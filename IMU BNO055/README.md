@@ -51,7 +51,7 @@ disqus: hackmd
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-String PoseX, PoseY, PoseZ, On;
+String PoseX, PoseY, PoseZ;
 /* Set the delay between fresh samples */
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
@@ -149,7 +149,7 @@ void loop() {
 NodeMCU為客戶端，使用UDP架構來傳輸慣性感測器資料。    
 NodeMCU set as a client and carries out the wireless data transmission with UDP protocol.
 
-```
+```clike=
 /** WIFI LIBRARY PART**/
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -292,13 +292,125 @@ void loop() {
 
   }
 ```
-
 ---
-Reference
 
-參考DCM [IMU:Theory](http://www.ent.mrt.ac.lk/~rohan/teaching/EN4562/LectureNotes/Lec%203%20IMU%20Theory.pdf)的Drift cancellation部分
+Unity 接收並控制方塊旋轉
+---
+{%youtube NqKCRLLRfbo %}
+---
+Unity程式碼↓
+---
+```clike=
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+//引入庫  
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+
+public class IMU_Unity_Server : MonoBehaviour
+{
+     //以下默認都是私有的成員  
+    Socket socket; //目標socket  
+    EndPoint clientEnd; //客户端  
+    IPEndPoint ipEnd; //偵聽端口  
+    public float yaw, pitch, roll;
+    string recvStr; //接收的字符串  
+    string sendStr; //發送的字符串
+    byte[] recvData = new byte[1024]; //接收的數據，必須為字節  
+    byte[] sendData = new byte[1024]; //發送的數據，必須為字節
+    int recvLen; //接收的數據長度  
+    Thread connectThread; //連接線程  
+
+    void InitSocket()
+    {
+        //定義偵聽端口,偵聽任何IP  
+        ipEnd = new IPEndPoint(IPAddress.Any, 28);
+        //定義套接字類型,在主線程中定義 
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        //服務端需要綁定ip  
+        socket.Bind(ipEnd);
+        //定義客戶端
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        clientEnd = (EndPoint)sender;
+        print("waiting for UDP dgram");
+
+        //開啟一個線程連接，必須的，否則主線程卡死 
+        connectThread = new Thread(new ThreadStart(SocketReceive));
+        connectThread.Start();
+    }
+
+
+void SocketReceive()
+    {
+        //進入接收循環
+        while (true)
+        {
+            //對data清零  
+            recvData = new byte[1024];
+            //獲取客戶端，獲取客戶端數據，用引用給客戶端賦值
+            recvLen = socket.ReceiveFrom(recvData, ref clientEnd);
+            //print("message from: " + clientEnd.ToString()); //列印客户端信息  
+            //輸出接收到的數據 
+            recvStr = Encoding.ASCII.GetString(recvData, 0, recvLen);
+            //print(recvStr);
+            char[] splitChar = { ' ', ',', ':', '\t', ';' };
+            string[] dataRaw = recvStr.Split(splitChar);
+            yaw = float.Parse(dataRaw[0]);
+            pitch = float.Parse(dataRaw[1]);
+            roll = float.Parse(dataRaw[2]);
+
+           
+        }
+    }
+
+    //連接關閉
+    void SocketQuit()
+    {
+        //關閉線程 
+        if (connectThread != null)
+        {
+            connectThread.Interrupt();
+            connectThread.Abort();
+        }
+        //最後關閉socket
+        if (socket != null)
+            socket.Close();
+        print("disconnect");
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        InitSocket(); //在這裡初始化server  
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        //print(FlexVal);
+        this.transform.rotation = Quaternion.Euler(roll, yaw, pitch);//BNO055
+    }
+
+    void OnApplicationQuit()
+    {
+        SocketQuit();
+    }
+}
+```
+
+
+
+
+
+
+Reference
+---
+[DCM IMU:Theory Drift cancellation](http://www.ent.mrt.ac.lk/~rohan/teaching/EN4562/LectureNotes/Lec%203%20IMU%20Theory.pdf)
 
 [Adafruit](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/arduino-code)
 
 
-###### tags: `GITHUB` `Documentation`
+###### tags: `GITHUB`
