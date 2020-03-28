@@ -3,7 +3,7 @@ title: 'GitHub Arduino Sensor IMU-BNO055 Readme'
 disqus: hackmd
 ---
 
-## 九軸慣性感測器（Inertial measurement unit IMU）
+## 實作九軸慣性感測器於Unity內即時無線傳輸控制方塊
 ---
 
 [**HACKMD Link**](https://hackmd.io/@J-T-LEE/IMU-BNO055)    
