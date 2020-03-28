@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-public class IMU_Server : MonoBehaviour
+public class IMU_Unity_Server : MonoBehaviour
 {
      //以下默認都是私有的成員  
     Socket socket; //目標socket  
