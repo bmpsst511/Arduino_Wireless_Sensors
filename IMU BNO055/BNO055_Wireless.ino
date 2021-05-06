@@ -13,6 +13,7 @@
 const char* ssid ="你看不到我";
 const char* password = "你以為我會打出來嗎...!?";
 const char ip[]="192.168.XX.XXX"; //分享器給你Server的IP位址
+const int port = 27;
 /** WIFI分享器設定 **/
 
 String PoseX, PoseY, PoseZ;
@@ -23,7 +24,7 @@ String PoseX, PoseY, PoseZ;
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
 /** 指定Port 且設置為客戶端**/
-WiFiServer server(27);
+WiFiServer server(port);
 WiFiUDP Client;
 /** 指定Port 且設置為客戶端**/
 
@@ -71,7 +72,7 @@ void setup() {
   Serial.println(WiFi.localIP());
  
   // Start the UDP client
-  Client.begin(27);
+  Client.begin(port);
   /** 上電後執行WIFI連線與顯示相關資訊**/
   
    /* Initialise the sensor */
@@ -131,7 +132,7 @@ void loop() {
   
   /**開始發送資料給Server端 **/
     // Send the distance to the client, along with a break to separate our messages
-    Client.beginPacket(ip,27); //前面指定的Port
+    Client.beginPacket(ip,port); //前面指定的Port
     Client.println(PoseX+";"+PoseY+";"+PoseZ);
     Client.endPacket();
     delay(BNO055_SAMPLERATE_DELAY_MS);
