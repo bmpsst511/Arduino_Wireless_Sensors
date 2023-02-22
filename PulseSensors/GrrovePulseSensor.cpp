@@ -2,22 +2,19 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUDP.h>
+#include <OSCMessage.h>
 #include <Wire.h>
 
-/* Set the delay between fresh samples */
-#define BNO055_SAMPLERATE_DELAY_MS (100)
+const char *ssid =  "xxx";     // replace with your wifi ssid and wpa2 key
+const char *pass =  "xxx";
 
-const char *ssid =  "Drink";     // replace with your wifi ssid and wpa2 key
-const char *pass =  "03487150";
-
-const char ip[]="192.168.0.101"; //分享器給你Server的IP位址
-
-String PoseX, PoseY, PoseZ;
-int iTestNum = 0;
+const IPAddress outIp(172,20,10,5); //分享器給你Server的IP位址
+const unsigned int outPort = 8000;
+const unsigned int localPort = 6969;
 
 /** 指定Port 且設置為客戶端**/
-WiFiServer server(27);
-WiFiUDP Client;
+WiFiServer server(outPort);
+WiFiUDP Udp;
 //WiFiClient client;
 /** 指定Port 且設置為客戶端**/
  
@@ -25,24 +22,16 @@ void setup()
 {
   Serial.begin(9600); /* begin serial for debug */
 
-  //delay(10);
+  delay(10);
 
-  /* Serial.println("Connecting to ");
+  Serial.println("Connecting to ");
   Serial.println(ssid); 
+  WiFi.begin(ssid, pass);
 
-  WiFi.begin(ssid, pass); 
-  int iCount=0;
   while (WiFi.status() != WL_CONNECTED) 
   {
     delay(500);
     Serial.print(".");
-
-    if(iCount>100) {
-      Serial.print("retry");
-      WiFi.begin(ssid, pass); 
-      iCount = 0;
-    } 
-    iCount++;
   }
   Serial.println("");
   Serial.println("WiFi connected"); 
@@ -50,7 +39,7 @@ void setup()
   Serial.println(WiFi.localIP());
 
   // Start the UDP client
-  Client.begin(27); */
+  Udp.begin(localPort);
   Wire.begin(D1, D2); /* join i2c bus with SDA=D1 and SCL=D2 of NodeMCU */
 }
  
@@ -62,15 +51,20 @@ void loop() {
 
   //Client.beginPacket(ip,27); //前面指定的Port
   // heart beat
+  OSCMessage msg("/osc/inputs");
   Wire.requestFrom(0xA0 >> 1, 1);    // request 1 bytes from slave device
   while(Wire.available()) {          // slave may send less than requested
     unsigned char c = Wire.read();   // receive heart rate value (a byte)
     Serial.println(c, DEC);         // print heart rate value
-    //Client.println(c, DEC);
-    Serial.println(c);         // print heart rate value
-    Serial.print(".");
+    //Serial.println(c);         // print heart rate value
+    //Serial.print(".");
+    //Start to send value to max/msp
+    //Udp.println(c, DEC);
+    msg.add(c);
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
   }
-  //Client.endPacket();
 
   //delay(BNO055_SAMPLERATE_DELAY_MS);
   delay(500);
